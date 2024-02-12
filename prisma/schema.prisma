@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String  @id @default(auto()) @map("_id") @db.ObjectId
+  //Identity
+  name           String
+  email          String
+  password       String
+  pin            String?
+  //Transaction
+  transactionPin String?
+
+  createdAt   DateTime      @default(now())
+  Competition Competition[]
+}
+
+model Competition {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  creatorId String @db.ObjectId
+  CreatedBy User   @relation(fields: [creatorId], references: [id])
+  Post      Post[]
+}
+
+model Post {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  
+  competitionId String      @db.ObjectId
+  Competition   Competition @relation(fields: [competitionId], references: [id])
+}
